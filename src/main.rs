@@ -1,5 +1,7 @@
 #![allow(unused)]
 
+use crate::model::ModelController;
+
 pub use self::error::{Error, Result};
 
 use axum::{
@@ -16,10 +18,14 @@ mod web;
 
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()>{
+
+    let mc = ModelController::new().await?;
+
     let routes_hello: Router = Router::new()
         .merge(routes_hello())
         .merge(web::routes_login::routes())
+        .nest("/api", web::routes_tickets::routes(mc.clone()))
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())
         .fallback_service(routes_static());
@@ -30,6 +36,8 @@ async fn main() {
     axum::serve(listener, routes_hello.into_make_service())
         .await
         .unwrap();
+
+    Ok(())
 }
 
 async fn main_response_mapper(res: Response) -> Response {
