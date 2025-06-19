@@ -5,7 +5,11 @@ use crate::model::ModelController;
 pub use self::error::{Error, Result};
 
 use axum::{
-    extract::{Path, Query}, middleware, response::{Html, IntoResponse, Response}, routing::{get, get_service}, Router
+    Router,
+    extract::{Path, Query},
+    middleware,
+    response::{Html, IntoResponse, Response},
+    routing::{get, get_service},
 };
 use serde::Deserialize;
 use tokio::net::TcpListener;
@@ -16,10 +20,8 @@ mod error;
 mod model;
 mod web;
 
-
 #[tokio::main]
-async fn main() -> Result<()>{
-
+async fn main() -> Result<()> {
     let mc = ModelController::new().await?;
 
     let routes_hello: Router = Router::new()
@@ -42,7 +44,7 @@ async fn main() -> Result<()>{
 
 async fn main_response_mapper(res: Response) -> Response {
     println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
-    println!(); 
+    println!();
     res
 }
 
