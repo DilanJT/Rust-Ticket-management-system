@@ -3,15 +3,14 @@ use crate::{
     model::{ModelController, Ticket, TicketForCreate},
 };
 use axum::{
-    Json, Router,
-    extract::{Path, State},
-    routing::{delete, get, post},
+    extract::{Path, State}, middleware, routing::{delete, get, post}, Json, Router
 };
 
 pub fn routes(mc: ModelController) -> Router {
     Router::new()
         .route("/tickets", post(create_ticket).get(list_tickets))
         .route("/tickets/{id}", delete(delete_ticket))
+        .route_layer(middleware::from_fn(super::mw_auth::mw_require_auth))
         .with_state(mc)
 }
 
